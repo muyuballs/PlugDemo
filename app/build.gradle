@@ -1,0 +1,39 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion rootProject.compileSdkVersion
+    buildToolsVersion rootProject.buildToolsVersion
+
+    defaultConfig {
+        applicationId "com.mornning.plugdemo"
+        minSdkVersion 14
+        targetSdkVersion rootProject.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+task acddWrapBundle << {
+
+    javaexec {
+        classpath "$projectDir/ACDDExt.jar"
+        main = 'org.acdd.ext.bundleInfo.maker.BundleMakeBooter'
+        args "$projectDir/src/main/jniLibs/armeabi".toString(), "$projectDir/src/main/assets/bundle-info.json".toString(), "$projectDir/.bundleCache"
+    }
+}
+
+assembleDebug.dependsOn(acddWrapBundle)
+assembleRelease.dependsOn(acddWrapBundle)
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    testCompile 'junit:junit:4.12'
+    compile 'com.android.support:appcompat-v7:22.2.1'
+    compile project(':ACDDCore')
+}
